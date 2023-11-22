@@ -57,7 +57,7 @@ describe('Posts Component', () => {
     ]);
 
     TestBed.configureTestingModule({
-      declarations: [PostsComponent, FakePostComponent],
+      declarations: [PostsComponent, PostComponent],
       providers: [
         {
           provide: PostService,
@@ -68,6 +68,30 @@ describe('Posts Component', () => {
     fixture = TestBed.createComponent(PostsComponent);
     component = fixture.componentInstance;
     // postService = TestBed.inject(PostService);
+  });
+
+  it('should create exact same number of Post component with posts', () => {
+    mockPostService.getPosts.and.returnValue(of(POSTS));
+    // This will call ngOnInit for PostsComponent and their child components
+    fixture.detectChanges();
+    const postComponentDEs = fixture.debugElement.queryAll(
+      By.directive(PostComponent)
+    );
+
+    expect(postComponentDEs.length).toBe(POSTS.length);
+  });
+  it('should check whether exact post is sending to PostComponent', () => {
+    mockPostService.getPosts.and.returnValue(of(POSTS));
+    fixture.detectChanges();
+    const postComponentDEs = fixture.debugElement.queryAll(
+      By.directive(PostComponent)
+    );
+
+    postComponentDEs.forEach((postComponentDE, index) => {
+      expect(postComponentDE.componentInstance.post.title).toEqual(
+        POSTS[index].title
+      );
+    });
   });
 
   it('should set posts from the service directly', () => {
